@@ -1,0 +1,18 @@
+# 核心依赖
+playwright>=1.40.0          # 浏览器自动化，用于爬取各平台评论
+pyyaml>=6.0.1               # YAML配置文件解析
+python-dotenv>=1.0.0        # 环境变量加载
+sqlite3                     # 数据库（Python内置，无需安装）
+requests>=2.31.0            # HTTP请求库
+pydantic>=2.5.0             # 数据验证
+loguru>=0.7.2               # 日志管理
+pandas>=2.1.0               # 数据处理
+numpy>=1.24.0               # 数值计算
+openai>=1.3.0               # 大模型API（可选，用于AI评分）
+tiktoken>=0.5.0             # Token计数（可选）
+
+# 可选依赖
+# selenium>=4.15.0          # 备选浏览器自动化方案
+# proxybroker2>=1.1.0       # 自动代理获取
+# phonenumbers>=8.13.0      # 电话号码验证
+# jieba>=0.42.1             # 中文分词，用于关键词匹配

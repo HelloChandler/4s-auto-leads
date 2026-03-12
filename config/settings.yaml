@@ -1,0 +1,115 @@
+# 系统核心配置文件
+
+# 平台账号配置
+platforms:
+  douyin:
+    username: your_douyin_phone_number
+    password: your_douyin_password
+    cookie: optional_cookie_string  # 优先使用cookie登录，避免重复验证
+    enabled: true
+    check_interval: 300  # 监控间隔，单位：秒
+    max_comments_per_video: 1000  # 每个视频最多抓取评论数
+
+  kuaishou:
+    username: your_kuaishou_phone_number
+    password: your_kuaishou_password
+    cookie: optional_cookie_string
+    enabled: true
+    check_interval: 300
+    max_comments_per_video: 1000
+
+  xiaohongshu:
+    username: your_xiaohongshu_phone_number
+    password: your_xiaohongshu_password
+    cookie: optional_cookie_string
+    enabled: true
+    check_interval: 300
+    max_comments_per_video: 1000
+
+# 监控视频列表配置
+monitor_videos:
+  douyin:
+    - url: https://www.douyin.com/video/xxxxxxxxxxxxxxxxx
+      brand: "奔驰"
+      model: "C级"
+      tags: ["豪华轿车", "新款"]
+    # 可以添加更多监控视频
+
+  kuaishou:
+    - url: https://www.kuaishou.com/short-video/xxxxxxxxxxxxxxxxx
+      brand: "宝马"
+      model: "3系"
+      tags: ["运动轿车", "优惠"]
+    # 可以添加更多监控视频
+
+  xiaohongshu:
+    - url: https://www.xiaohongshu.com/discovery/item/xxxxxxxx
+      brand: "奥迪"
+      model: "A4L"
+      tags: ["家用轿车", "性价比"]
+    # 可以添加更多监控视频
+
+# 用户评分规则（权重1-10，分数越高意向越强）
+scoring_rules:
+  keyword_matches:
+    "想买": 5
+    "考虑": 3
+    "问价": 8
+    "价格": 4
+    "优惠": 6
+    "首付": 7
+    "落地价": 8
+    "什么时候提车": 9
+    "对比": 4
+    "推荐": 5
+    "哪个好": 6
+    "预算": 7
+  # 行为权重
+  comment_length:
+    weight: 2
+    min_length: 10  # 超过此长度加分
+  reply_count:
+    weight: 3
+    threshold: 2  # 回复超过此数加分
+  mention_price:
+    weight: 8
+  mention_location:
+    weight: 3  # 提到本地城市加分
+
+  # 分数等级划分
+  levels:
+    high: 20  # >=20分 高意向，优先触达
+    medium: 10  # 10-19分 中意向，次优先触达
+    low: 0  # 0-9分 低意向，暂不触达
+
+# 触达模板配置
+message_templates:
+  private_message:
+    high: |
+      您好！看到您在关注{brand}{model}车型，我是本地{brand}4S店的销售顾问，目前这款车有大额优惠活动，还可以提供上门试驾服务，方便的话可以留个联系方式给您发详细报价哦😊
+    medium: |
+      您好！看到您在了解{brand}{model}，我们店现在有专属优惠，感兴趣的话可以给您介绍下最新的价格和活动信息~
+
+  call_script:
+    high: |
+      您好，我是{brand}4S店的销售顾问，看到您在网上关注{model}车型，我们现在有非常大的优惠力度，想和您简单介绍下，请问您现在方便吗？
+
+# 触达策略
+contact_strategy:
+  max_daily_contacts: 50  # 每日最多触达人数
+  contact_hours: [9, 21]  # 允许触达的时间段（9点到21点）
+  retry_times: 2  # 未回复的重试次数
+  retry_interval: 86400  # 重试间隔（1天）
+
+# 数据库配置
+database:
+  path: data/leads.db
+  backup_enabled: true
+  backup_interval: 86400  # 每日备份一次
+
+# 日志配置
+logging:
+  level: INFO
+  file_path: data/logs/app.log
+  max_file_size: 10485760  # 10MB
+  backup_count: 10

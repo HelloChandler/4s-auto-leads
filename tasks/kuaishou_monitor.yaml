@@ -1,0 +1,49 @@
+# 快手监控任务配置（OpenClaw任务格式）
+
+name: "快手评论监控任务"
+description: "定时监控快手指定视频的评论，识别潜在购车线索"
+enabled: true
+schedule:
+  kind: "every"
+  everyMs: 300000  # 每5分钟执行一次，和settings.yaml中check_interval保持一致
+
+payload:
+  kind: "agentTurn"
+  message: |
+    执行快手监控任务：
+    1. 读取config/settings.yaml中的快手配置和监控视频列表
+    2. 使用Playwright登录快手（优先使用cookie）
+    3. 遍历所有监控视频，抓取最新评论
+    4. 调用src/scorer.py对评论用户进行意向评分
+    5. 调用src/deduplicator.py检查是否已触达过该用户
+    6. 高意向用户写入数据库，并调用src/messenger.py进行自动触达
+    7. 记录运行日志到data/logs/tasks/kuaishou.log
+  model: "volcengine-plan/ark-code-latest"
+  timeoutSeconds: 1800  # 任务超时时间30分钟
+
+delivery:
+  mode: "announce"
+  bestEffort: true
+
+sessionTarget: "isolated"
+
+# 任务参数
+parameters:
+  platform: "kuaishou"
+  max_comments_per_video: 1000
+  only_new_comments: true  # 只抓取上次运行后新增的评论
+  auto_contact: true  # 自动触达高意向用户
+  contact_level: "high"  # 只触达高意向用户
+
+# 失败重试配置
+retry:
+  max_attempts: 3
+  retry_delay: 60000  # 重试间隔1分钟
+  retry_on: ["network_error", "login_failed", "page_load_error"]
+
+# 告警配置
+alerts:
+  on_failure: true
+  on_success: false
+  alert_threshold: 3  # 连续失败3次发送告警
+  alert_channel: "system"

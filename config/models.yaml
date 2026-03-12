@@ -1,0 +1,61 @@
+# 大模型配置文件（可选，使用多LLM时配置）
+
+# 默认使用的模型
+default_model: "gpt-3.5-turbo"
+
+# 模型列表配置
+models:
+  - name: "gpt-3.5-turbo"
+    provider: "openai"
+    api_key_env: "OPENAI_API_KEY"
+    base_url_env: "OPENAI_BASE_URL"
+    max_tokens: 4096
+    temperature: 0.7
+    use_for: ["comment_analysis", "scoring", "template_generation"]
+    priority: 1
+
+  # 可选：豆包模型
+  # - name: "doubao-pro"
+  #   provider: "doubao"
+  #   api_key_env: "DOUBAO_API_KEY"
+  #   base_url: "https://aquasearch.bytedance.com/api/v3"
+  #   max_tokens: 4096
+  #   temperature: 0.7
+  #   use_for: ["comment_analysis"]
+  #   priority: 2
+
+  # 可选：通义千问模型
+  # - name: "qwen-max"
+  #   provider: "qianwen"
+  #   api_key_env: "QIANWEN_API_KEY"
+  #   base_url: "https://dashscope.aliyuncs.com/api/v1"
+  #   max_tokens: 6144
+  #   temperature: 0.7
+  #   use_for: ["scoring"]
+  #   priority: 2
+
+# 模型调用配置
+model_config:
+  retry_times: 3  # 调用失败重试次数
+  retry_interval: 1000  # 重试间隔（毫秒）
+  timeout: 30000  # 超时时间（毫秒）
+  fallback_enabled: true  # 启用模型降级，当前模型失败时自动调用低优先级模型
+
+# 提示词模板
+prompts:
+  comment_analysis: |
+    请分析以下用户评论，判断用户是否有购车意向：
+    评论内容：{comment_content}
+    视频相关车型：{brand} {model}
+    请输出JSON格式结果，包含：
+    - has_intent: boolean 是否有购车意向
+    - intent_level: 1-5 意向等级，5最高
+    - keywords: array 匹配到的购车相关关键词
+    - analysis: string 简短分析原因
+
+  scoring: |
+    请根据以下信息给用户的购车意向打分，满分100分：
+    用户评论：{comment_content}
+    用户行为：{user_behavior}
+    关键词匹配：{keyword_matches}
+    请只输出分数值，不需要其他内容

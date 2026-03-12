@@ -1,0 +1,53 @@
+# 代理IP配置文件
+# 建议使用住宅代理池，避免平台检测和账号封禁
+
+# 代理模式：none（不使用）| single（固定代理）| pool（代理池）
+proxy_mode: "none"
+
+# 固定代理配置（proxy_mode=single时使用）
+single_proxy:
+  http: "http://username:password@proxy-host:port"
+  https: "http://username:password@proxy-host:port"
+  # 可选：socks5代理
+  # socks5: "socks5://username:password@proxy-host:port"
+
+# 代理池配置（proxy_mode=pool时使用）
+proxy_pool:
+  api_url: "http://your-proxy-pool:5010/get"  # 代理池获取IP的API地址
+  delete_url: "http://your-proxy-pool:5010/delete?proxy={proxy}"  # 删除不可用代理的API
+  check_url: "https://www.baidu.com"  # 代理可用性验证地址
+  check_timeout: 5000  # 验证超时时间（毫秒）
+  max_retry: 3  # 获取代理重试次数
+  refresh_interval: 300  # 代理池刷新间隔（秒）
+  rotate_interval: 60  # 每个代理使用时长（秒），0表示不自动切换
+
+# 各平台代理配置
+platform_proxy:
+  douyin:
+    enabled: false
+    rotate_on_failure: true  # 请求失败时自动切换代理
+    max_failures: 3  # 最多失败次数，超过后切换代理
+
+  kuaishou:
+    enabled: false
+    rotate_on_failure: true
+    max_failures: 3
+
+  xiaohongshu:
+    enabled: false
+    rotate_on_failure: true
+    max_failures: 3
+
+# 代理白名单（不需要走代理的地址）
+proxy_bypass:
+  - "localhost"
+  - "127.0.0.1"
+  - "192.168.*"
+  - "10.*"
+  - "*.internal"
+
+# 代理使用限制
+proxy_limits:
+  max_concurrent: 10  # 最大并发代理连接数
+  request_interval: 1000  # 同一代理两次请求间隔（毫秒）
+  daily_request_limit: 10000  # 每日总请求限制
